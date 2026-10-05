@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spring Batch Mastery Guide</title>
+<style>
+:root{--bg:#f5f7f4;--panel:#fff;--ink:#1c2a24;--mute:#5b6b63;--line:#d9e1db;--acc:#1d7a52;--acc2:#e8f3ed;--code:#13231c;--codeink:#d6efe2;--warn:#fff4dc;--warnl:#e9c46a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a15;--panel:#16251e;--ink:#e3eee8;--mute:#9db3a8;--line:#27392f;--acc:#4fc58b;--acc2:#1b3328;--code:#0a120e;--codeink:#cfeadc;--warn:#2d2713;--warnl:#a98a2c}}
+:root[data-theme="dark"]{--bg:#0f1a15;--panel:#16251e;--ink:#e3eee8;--mute:#9db3a8;--line:#27392f;--acc:#4fc58b;--acc2:#1b3328;--code:#0a120e;--codeink:#cfeadc;--warn:#2d2713;--warnl:#a98a2c}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--acc)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:12px;align-items:center;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.top b{font-size:17px}.top button{margin-left:auto;background:var(--acc2);color:var(--acc);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:14px}
+.menu{display:none}
+.wrap{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1240px;margin:0 auto}
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 54px);align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:18px 12px 30px 16px;font-size:14px}
+nav a{display:block;padding:5px 10px;border-radius:6px;color:var(--mute);text-decoration:none}
+nav a:hover{background:var(--acc2);color:var(--ink)}
+nav a.on{background:var(--acc2);color:var(--acc);font-weight:600}
+nav h4{margin:14px 10px 4px;font-size:13px;color:var(--ink)}
+main{padding:28px 22px 80px;min-width:0}
+.hero{padding:8px 0 22px;border-bottom:2px solid var(--acc);margin-bottom:8px}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em}
+.hero p{max-width:62ch;color:var(--mute);margin:0}
+section{padding:30px 0 6px;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(22px,3.2vw,30px);margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 14px}
+h3{font-size:17px;margin:20px 0 6px;color:var(--acc)}
+p,li{max-width:74ch}
+ul{padding-left:22px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.card h5{margin:0 0 4px;font-size:15px}.card p{margin:0;font-size:14.5px;color:var(--mute)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+th{background:var(--acc2)}
+pre{background:var(--code);color:var(--codeink);padding:14px 16px;border-radius:10px;overflow-x:auto;font:13.5px/1.55 ui-monospace,Menlo,Consolas,monospace;margin:12px 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;background:var(--acc2);padding:1px 5px;border-radius:4px}
+pre code{background:none;padding:0}
+.note{background:var(--warn);border-left:4px solid var(--warnl);padding:10px 14px;border-radius:6px;margin:14px 0;max-width:78ch}
+.good{border-left:4px solid var(--acc);background:var(--acc2);padding:10px 14px;border-radius:6px;margin:14px 0;max-width:78ch}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:8px 0;padding:2px 16px}
+summary{cursor:pointer;padding:10px 0;font-weight:600}
+summary:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+@media (max-width:860px){.wrap{display:block}.menu{display:inline-block}nav{display:none;position:fixed;inset:calc(env(safe-area-inset-top,0px) + 50px) 0 0 0;max-height:none;background:var(--bg);z-index:4}nav.open{display:block}main{padding:20px 16px 70px}}
+</style>
+</head>
+<body>
+<div class="top"><button class="menu" id="mb" aria-label="Open chapters">Chapters</button><b>Spring Batch Mastery</b><button id="tb">Theme</button></div>
+<div class="wrap">
+<nav id="nav">
+<h4>Start</h4><a href="#intro">Versions &amp; how to read</a>
+<h4>Foundations</h4><a href="#m1">1 Fundamentals</a><a href="#m2">2 Architecture</a><a href="#m3">3 Job</a><a href="#m4">4 Step</a>
+<h4>Reading &amp; writing</h4><a href="#m5">5 Readers</a><a href="#m6">6 Processor</a><a href="#m7">7 Writers</a><a href="#m8">8 Chunk processing</a>
+<h4>Reliability</h4><a href="#m9">9 Transactions</a><a href="#m10">10 Parameters &amp; scopes</a><a href="#m11">11 Metadata tables</a><a href="#m12">12 Restartability</a><a href="#m13">13 Error handling</a>
+<h4>Scale &amp; ship</h4><a href="#m14">14 Performance</a><a href="#m15">15 Scaling</a><a href="#m16">16 Interview prep</a><a href="#m17">17 Production</a>
+<h4>Build it</h4><a href="#cap">Capstone application</a>
+</nav>
+<main>
+<div class="hero"><h1>Spring Batch Mastery Guide</h1><p>For a Java 21 developer who already knows Spring Boot, JPA, MySQL and REST. First principles to production, targeting Spring Batch 6 on Spring Boot 4, with notes for version 5.</p></div>
+
+<section id="intro"><h2>Versions and how to read this guide</h2>
+<p class="sub">Spring Batch 6.0.x on Boot 4.0.x (Java 17+). Many systems still run 5.2 on Boot 3.5, so differences are flagged.</p>
+<div class="tw"><table><tr><th>Area</th><th>Batch 5.x</th><th>Batch 6.x</th></tr>
+<tr><td>Launching</td><td><code>JobLauncher</code></td><td><code>JobOperator</code> (extends launcher); <code>start(job, params)</code></td></tr>
+<tr><td>History queries</td><td><code>JobExplorer</code></td><td><code>JobRepository</code> extends it</td></tr>
+<tr><td>Chunk step</td><td><code>.chunk(10, tx)</code></td><td><code>ChunkOrientedStepBuilder</code>, tx manager optional</td></tr>
+<tr><td>Retry</td><td>Spring Retry</td><td>Spring Framework 7 core retry</td></tr>
+<tr><td>Packages</td><td><code>...batch.item.*</code></td><td><code>...batch.infrastructure.*</code>; Job, Step, listeners moved</td></tr>
+<tr><td>Sequence</td><td><code>BATCH_JOB_SEQ</code></td><td><code>BATCH_JOB_INSTANCE_SEQ</code></td></tr>
+<tr><td>Boot starter</td><td><code>spring-boot-starter-batch</code></td><td><code>-batch-jdbc</code> stores metadata in DB; plain starter is in-memory</td></tr></table></div>
+<div class="note"><b>Boot 4 trap.</b> With the plain batch starter nothing is written to MySQL and restart across JVM restarts disappears. Use <code>spring-boot-starter-batch-jdbc</code> for anything restartable.</div>
+<p>Each topic follows: concept, why, when, internals, example, common mistakes, production practice. Code uses 6.x packages. The capstone code was written carefully but not compiled in the environment that produced the guide, so compile it on day one.</p></section>
+
+<section id="m1"><h2>1. Fundamentals</h2><p class="sub">Bulk, non-interactive, restartable processing.</p>
+<p>Spring Batch gives you a Job/Step/read-process-write model, chunked transactions, a metadata store for monitoring and restart, ready-made readers and writers, skip/retry, and scaling options. It does not schedule jobs and has no UI.</p>
+<div class="tw"><table><tr><th>Online / real-time</th><th>Batch</th></tr>
+<tr><td>One request is one unit of work</td><td>One run is millions of units</td></tr>
+<tr><td>Latency matters</td><td>Throughput matters</td></tr>
+<tr><td>Failure: user retries</td><td>Failure: restart without duplicating work</td></tr>
+<tr><td>One transaction per request</td><td>One transaction per chunk</td></tr></table></div>
+<p>It maps to ETL: <code>ItemReader</code> extracts, <code>ItemProcessor</code> transforms, <code>ItemWriter</code> loads.</p>
+<div class="row"><div class="card"><h5>Use it for</h5><p>Nightly settlement, file imports, migrations, reports, reconciliation, archiving.</p></div><div class="card"><h5>Skip it for</h5><p>Tiny scripts, a single <code>INSERT ... SELECT</code>, streaming workloads.</p></div></div>
+<div class="good"><b>Practice:</b> decide up front who triggers jobs and how operators restart them. Run each job in its own JVM or container.</div></section>
+
+<section id="m2"><h2>2. Architecture</h2><p class="sub">Who does what.</p>
+<pre><code>Trigger (cron, REST, CLI)
+   -> JobOperator -> Job -> Step -> Step
+                              |-- Reader / Processor / Writer
+   JobRepository  ->  MySQL BATCH_* tables</code></pre>
+<div class="row">
+<div class="card"><h5>Job / Step</h5><p>A named flow of steps. A step is a tasklet or a chunk loop, and is the unit of restart and transaction.</p></div>
+<div class="card"><h5>Reader / Processor / Writer</h5><p>Reader returns one item per call, <code>null</code> at end. Processor handles one item. Writer gets the whole chunk.</p></div>
+<div class="card"><h5>JobRepository</h5><p>Persists every run. Called at start, at each chunk commit, and at step end.</p></div>
+<div class="card"><h5>JobOperator</h5><p>Start, restart, stop, abandon. Replaces <code>JobLauncher</code> in v6.</p></div>
+<div class="card"><h5>ExecutionContext</h5><p>Persisted key/value map. Step scope is saved each commit (reader position). Job scope passes small data between steps.</p></div></div>
+<div class="note">Calling a Job bean like a method creates no metadata. Always go through <code>JobOperator</code>.</div></section>
+
+<section id="m3"><h2>3. Job</h2><p class="sub">The concept people get wrong: instance versus execution.</p>
+<pre><code>Job "importJob"
+ |- JobInstance #1 = name + identifying params {runDate=2026-10-01}
+ |     |- JobExecution #1 (FAILED)
+ |     '- JobExecution #2 (COMPLETED)   restart of the same instance
+ '- JobInstance #2 = {runDate=2026-10-02}</code></pre>
+<ul><li>One instance can have many executions.</li><li>A <b>COMPLETED</b> instance cannot run again (<code>JobInstanceAlreadyCompleteException</code>), which prevents double-processing.</li><li>Only one execution of an instance runs at a time.</li><li>Non-identifying parameters do not create a new instance.</li></ul>
+<pre><code>@Bean Job importJob(JobRepository repo, Step importStep, Step reportStep) {
+  return new JobBuilder("importJob", repo)
+      .start(importStep).next(reportStep).build();
+}</code></pre>
+<div class="tw"><table><tr><th>Status</th><th>Meaning</th><th>Restartable</th></tr>
+<tr><td>STARTED</td><td>Running</td><td>n/a</td></tr><tr><td>COMPLETED</td><td>Done</td><td>No</td></tr><tr><td>FAILED</td><td>Unrecoverable error</td><td>Yes</td></tr><tr><td>STOPPED</td><td>Stopped on request after current chunk</td><td>Yes</td></tr><tr><td>ABANDONED</td><td>Operator says never restart</td><td>No</td></tr></table></div>
+<div class="note"><b>Zombie STARTED.</b> If the JVM is killed, the row stays STARTED and restart fails with <code>JobExecutionAlreadyRunningException</code>. Confirm the process is dead, then recover or mark it. v6 adds graceful shutdown on SIGTERM to reduce this.</div>
+<div class="good"><b>Mistake:</b> a timestamp as an identifying parameter makes every launch a new instance, so restart never happens. Use stable keys such as file name or business date.</div></section>
+
+<section id="m4"><h2>4. Step</h2><p class="sub">Tasklet or chunk.</p>
+<div class="row"><div class="card"><h5>Tasklet</h5><p>One action, called repeatedly until it returns <code>FINISHED</code>, each call in its own transaction. File moves, one SQL statement, notifications.</p></div><div class="card"><h5>Chunk-oriented</h5><p>Read N, process each, write all, commit. About 90% of real batch.</p></div></div>
+<pre><code>new ChunkOrientedStepBuilder&lt;TxCsv, Tx&gt;("importStep", repo, 500)
+    .reader(reader).processor(processor).writer(writer)
+    .transactionManager(tx).build();</code></pre>
+<p>Useful <code>StepExecution</code> counters: read, filter, write, commit, rollback and skip counts. Sanity check: <code>read - filter - processSkip = write</code>.</p>
+<div class="good"><b>Mistake:</b> looping over records inside a tasklet loses chunking, skip, retry and mid-step restart. Keep steps small and single-purpose.</div></section>
+
+<section id="m5"><h2>5. Readers</h2><p class="sub">Only <code>read()</code> returning <code>null</code> ends the step.</p>
+<p>A reader that never returns null loops forever. One that returns null too early ends the step successfully with data silently missing. Readers that implement <code>ItemStream</code> save their position in <code>update()</code>, committed with each chunk, and restore it in <code>open()</code>.</p>
+<div class="tw"><table><tr><th>Reader</th><th>Thread-safe</th><th>Notes</th></tr>
+<tr><td><code>FlatFileItemReader</code></td><td>No</td><td>Streams a file; needs unique <code>.name()</code>; restart assumes file unchanged</td></tr>
+<tr><td><code>JdbcCursorItemReader</code></td><td>No</td><td>One cursor for the whole step. MySQL buffers all rows unless <code>useCursorFetch=true</code> plus fetchSize</td></tr>
+<tr><td><code>JdbcPagingItemReader</code></td><td>Yes</td><td>Key-based paging; unique sort key; best default for big tables</td></tr>
+<tr><td><code>JpaPagingItemReader</code></td><td>Yes</td><td>OFFSET paging, slow on deep pages; needs ORDER BY</td></tr>
+<tr><td><code>RepositoryItemReader</code></td><td>Yes</td><td>Spring Data pageable method, offset paging</td></tr></table></div>
+<div class="note">Offset paging while updating the filtered column (for example <code>status='NEW'</code> to <code>'DONE'</code>) skips rows. Key-based paging is safe.</div>
+<div class="good"><b>Practice:</b> align page size with chunk size, project to DTOs, index sort and filter columns, and rehearse a kill-and-restart.</div></section>
+
+<section id="m6"><h2>6. Processor</h2><p class="sub">Per-item business logic. Same <code>null</code>, opposite meaning from the reader.</p>
+<div class="tw"><table><tr><th>Outcome</th><th>How</th><th>Counted as</th></tr>
+<tr><td>Keep / transform</td><td>return an object</td><td>write count</td></tr>
+<tr><td>Filter (normal rule)</td><td><code>return null</code></td><td>filterCount</td></tr>
+<tr><td>Reject (bad data)</td><td>throw, with skip configured</td><td>processSkipCount</td></tr>
+<tr><td>Abort</td><td>throw an unskippable exception</td><td>step FAILED</td></tr></table></div>
+<p>Processors run inside the chunk transaction and are re-run on retry or rollback, so keep them pure and repeatable. Avoid per-item remote or SQL lookups (preload a map or join in the reader SQL), and avoid side effects.</p>
+<div class="good"><b>Practice:</b> log every reject with its key, and unit-test processors with plain JUnit.</div></section>
+
+<section id="m7"><h2>7. Writers</h2><p class="sub">One batched operation per chunk is where speed is won.</p>
+<div class="tw"><table><tr><th>Writer</th><th>Use when</th><th>Watch out</th></tr>
+<tr><td><code>JdbcBatchItemWriter</code></td><td>Volume</td><td>Add <code>rewriteBatchedStatements=true</code> on MySQL; use upserts. Records need an explicit parameter-source lambda</td></tr>
+<tr><td><code>JpaItemWriter</code></td><td>Need JPA lifecycle</td><td>Slower; <code>IDENTITY</code> ids disable insert batching</td></tr>
+<tr><td><code>RepositoryItemWriter</code></td><td>Small volume</td><td>Per-item <code>save()</code> is convenient, not fast</td></tr>
+<tr><td><code>FlatFileItemWriter</code></td><td>File output</td><td>Truncates to last commit on rollback; name files by run date</td></tr></table></div>
+<pre><code>INSERT INTO transactions (tx_id, amount, fee) VALUES (:txId, :amount, :fee)
+ON DUPLICATE KEY UPDATE amount = VALUES(amount), fee = VALUES(fee)</code></pre>
+<div class="note">HTTP calls and message sends are not rolled back with the database. If the call succeeds and the commit fails, the chunk repeats, so the remote side needs idempotency keys.</div></section>
+
+<section id="m8"><h2>8. Chunk processing</h2><p class="sub">One chunk, one transaction.</p>
+<pre><code>begin tx -> read x N -> process each -> write(chunk)
+         -> update step ExecutionContext + metadata -> commit</code></pre>
+<p>Business data and metadata commit atomically, so a restart never repeats committed work and never loses an uncommitted position. At most one chunk is redone.</p>
+<div class="tw"><table><tr><th>Chunk size</th><th>Effect</th></tr>
+<tr><td>10</td><td>100,000 commits per million rows; metadata dominates. Fine for debugging or heavy per-item work</td></tr>
+<tr><td>100</td><td>Reasonable default, good for JPA</td></tr>
+<tr><td>1000</td><td>Often fastest for JDBC batch; longer locks, bigger rollback</td></tr></table></div>
+<p>Start at 500 to 1000 for JDBC and 100 to 200 for JPA, then measure. Make chunk size a configuration property.</p></section>
+
+<section id="m9"><h2>9. Transactions</h2><p class="sub">The step owns them.</p>
+<ul><li>A chunk is one transaction. In a tasklet each <code>execute</code> call is one.</li><li>Step execution and context updates join the chunk transaction. Job-level updates use short transactions of their own.</li><li>Keep business tables and metadata in the same database so one transaction manager covers both.</li><li><code>REQUIRES_NEW</code> commits even when the chunk rolls back: right for reject logs, wrong for business data.</li></ul>
+<p>When a chunk fails without skip or retry, everything before the last commit stays and the in-flight chunk is lost. With skip on a writer failure, the framework scans the chunk item by item to find the bad one, which is expensive.</p>
+<pre><code>@Bean PlatformTransactionManager tm(DataSource ds){ return new JdbcTransactionManager(ds); }</code></pre></section>
+
+<section id="m10"><h2>10. Parameters and scopes</h2><p class="sub">Parameters exist only at launch, so late-bound beans need a scope.</p>
+<pre><code>@Bean @StepScope
+FlatFileItemReader&lt;TxCsv&gt; reader(@Value("#{jobParameters['inputFile']}") String f) { ... }</code></pre>
+<ol><li>At startup Spring registers a scoped proxy.</li><li>When the step starts, the real bean is built with the parameters resolved.</li><li>It is cached for that step execution and destroyed at the end.</li></ol>
+<div class="row"><div class="card"><h5>@StepScope</h5><p>One instance per step execution. Can read job params, job context, step context.</p></div><div class="card"><h5>@JobScope</h5><p>One instance per job execution. Job params and job context only.</p></div></div>
+<div class="note">Return the concrete type (<code>FlatFileItemReader</code>), not <code>ItemReader</code>, or the proxy hides <code>ItemStream</code> and no restart position is saved. Validate parameters with <code>DefaultJobParametersValidator</code>.</div></section>
+
+<section id="m11"><h2>11. Metadata tables</h2><p class="sub">The metadata is the product.</p>
+<div class="tw"><table><tr><th>Table</th><th>Holds</th></tr>
+<tr><td><code>BATCH_JOB_INSTANCE</code></td><td>Name and <code>JOB_KEY</code> (hash of identifying params), unique together</td></tr>
+<tr><td><code>BATCH_JOB_EXECUTION</code></td><td>One attempt: status, exit code, times</td></tr>
+<tr><td><code>BATCH_JOB_EXECUTION_PARAMS</code></td><td>Parameters per execution</td></tr>
+<tr><td><code>BATCH_STEP_EXECUTION</code></td><td>Counters per step</td></tr>
+<tr><td><code>BATCH_STEP_EXECUTION_CONTEXT</code></td><td>The checkpoint, e.g. <code>{"txReader.read.count":4500}</code></td></tr>
+<tr><td><code>BATCH_JOB_EXECUTION_CONTEXT</code></td><td>Shared job state</td></tr></table></div>
+<p>Every chunk commit updates the step execution and its context, so large contexts and ever-growing tables slow everything.</p>
+<pre><code>SELECT je.JOB_EXECUTION_ID, ji.JOB_NAME, je.STATUS, je.LAST_UPDATED
+FROM BATCH_JOB_EXECUTION je JOIN BATCH_JOB_INSTANCE ji USING (JOB_INSTANCE_ID)
+WHERE je.STATUS IN ('STARTED','STARTING','STOPPING');</code></pre>
+<div class="good"><b>Practice:</b> create the schema with migrations, add a retention job, keep the context tiny, never edit rows by hand. Failed v5 instances cannot be restarted under v6.</div></section>
+
+<section id="m12"><h2>12. Restartability</h2><p class="sub">Resume, do not start over.</p>
+<ol><li>Create a new execution for the same instance.</li><li>Skip steps that COMPLETED (unless <code>allowStartIfComplete</code>).</li><li>Copy the failed step's last context.</li><li><code>reader.open(ctx)</code> jumps to the saved position and the loop continues.</li></ol>
+<div class="row"><div class="card"><h5>Position-based</h5><p>Line count or last id in the context. The default.</p></div><div class="card"><h5>Marker-based</h5><p>Rows go NEW to DONE in the same transaction.</p></div><div class="card"><h5>Idempotent rerun</h5><p>Upserts, rerun the step. Simplest for short jobs.</p></div></div>
+<p><b>What breaks it:</b> input changed between failure and restart, non-idempotent writes, stateful readers in multi-threaded steps, timestamp parameters, a different job definition.</p>
+<div class="good"><b>Practice:</b> keep a CI test that injects a failure at item N, restarts, and asserts the data equals an uninterrupted run.</div></section>
+
+<section id="m13"><h2>13. Error handling</h2><p class="sub">Classify the exception, then pick the tool.</p>
+<div class="tw"><table><tr><th>Tool</th><th>For</th></tr>
+<tr><td>Fail (default)</td><td>Unexpected errors</td></tr><tr><td>Skip</td><td>Permanently bad data</td></tr><tr><td>Retry</td><td>Transient: deadlock, timeout, network</td></tr><tr><td>Restart</td><td>Fix the cause and relaunch</td></tr></table></div>
+<pre><code>new ChunkOrientedStepBuilder&lt;TxCsv, Tx&gt;("importStep", repo, 500)
+  .reader(r).processor(p).writer(w).transactionManager(tx)
+  .faultTolerant()
+  .skip(FlatFileParseException.class).skip(InvalidTxException.class).skipLimit(100)
+  .retry(TransientDataAccessException.class).retryLimit(3)
+  .skipListener(rejectListener)
+  .build();</code></pre>
+<ul><li>Always pair <code>skip</code> with <code>skipLimit</code> and <code>retry</code> with <code>retryLimit</code>.</li><li>Reader skip is cheap. Processor skip re-processes the chunk. Writer skip scans item by item, so validate in the processor.</li><li>Retry re-runs processors, so they must be repeatable and writers idempotent.</li><li>Record rejects with a <code>SkipListener</code> and mark the exit status <code>COMPLETED WITH SKIPS</code>.</li></ul>
+<div class="note">Never <code>skip(Exception.class)</code> with a huge limit. You will "succeed" with data missing. Treat the skip limit as a safety valve: a 40% reject rate means the file is bad.</div></section>
+
+<section id="m14"><h2>14. Performance tuning</h2><p class="sub">Find the bottleneck first.</p>
+<div class="tw"><table><tr><th>Symptom</th><th>First fix</th></tr>
+<tr><td>DB busy on inserts</td><td>JDBC batch, <code>rewriteBatchedStatements</code>, bigger chunk</td></tr>
+<tr><td>App CPU high</td><td>Profile the processor, precompute lookups</td></tr>
+<tr><td>Slow as data grows</td><td>Key-based paging, indexes, purge metadata</td></tr>
+<tr><td>OutOfMemoryError</td><td>Enable cursor streaming, smaller chunk, tiny context</td></tr>
+<tr><td>Lock waits</td><td>Smaller chunks, partition by key range, retry on deadlock</td></tr></table></div>
+<div class="tw"><table><tr><th>Volume</th><th>Recommendation</th></tr>
+<tr><td>~10k</td><td>Keep it simple. Chunk 100 to 500, JPA is fine</td></tr>
+<tr><td>~100k</td><td>JDBC batch writer, chunk 500 to 1000, page size equals chunk size</td></tr>
+<tr><td>~500k</td><td>JDBC reader and writer, chunk 1000, preload lookups, maybe 4 to 8 threads</td></tr>
+<tr><td>1M+</td><td>Partition by key range, chunk 1000 to 2000, idempotent upserts, set-based SQL where possible, dedicated JVM</td></tr></table></div>
+<p>Benchmark at real volume, not 1,000 rows. These are starting points, not guarantees.</p></section>
+
+<section id="m15"><h2>15. Scaling</h2><p class="sub">Pick the simplest option that meets your window.</p>
+<div class="tw"><table><tr><th>Option</th><th>How it works</th><th>Trade-off</th></tr>
+<tr><td>Multi-threaded step</td><td>Chunks run on a thread pool</td><td>Reader must be thread-safe; position restart lost (<code>saveState(false)</code>)</td></tr>
+<tr><td>Parallel steps</td><td>Independent flows via <code>split</code></td><td>Only helps with independent steps</td></tr>
+<tr><td>Local partitioning</td><td>Key ranges, one worker step each, same JVM</td><td>More code, restart works per partition</td></tr>
+<tr><td>Remote partitioning</td><td>Workers on other nodes read their own data via a shared repository</td><td>Needs broker and shared DB</td></tr>
+<tr><td>Remote chunking</td><td>Manager reads, workers process and write</td><td>Items cross the network; single reader</td></tr></table></div>
+<div class="good">For 1M+ rows on one machine, use local partitioning. Across machines, running N independent jobs with a <code>shard</code> parameter (for example as Kubernetes Jobs) is often simpler than a messaging topology.</div>
+<p><b>Mistakes:</b> non-thread-safe readers in threaded steps, overlapping or gapped partitions, connection pool smaller than the thread count.</p></section>
+
+<section id="m16"><h2>16. Interview preparation</h2><p class="sub">Open each answer after trying it yourself.</p>
+<details><summary>JobInstance versus JobExecution?</summary><p>An instance is the logical run (name plus identifying parameters). An execution is one attempt. One instance can have several executions, and a completed instance cannot run again.</p></details>
+<details><summary>Reader null versus processor null?</summary><p>Reader null means end of input. Processor null means filter this item: not written, filterCount increments, nothing fails.</p></details>
+<details><summary>What happens when a job fails halfway and you restart it?</summary><p>A new execution is created for the same instance. Completed steps are skipped. The failed step opens with the context from its last commit, so the reader skips ahead. At most one chunk is redone, so writes must be idempotent.</p></details>
+<details><summary>Why does @StepScope exist?</summary><p>Job parameters are unknown at startup. A proxy is registered, and the real bean is built when the step starts with <code>#{jobParameters[...]}</code> resolved. Return the specific type so <code>ItemStream</code> stays visible.</p></details>
+<details><summary>Why is a writer skip more expensive than a reader skip?</summary><p>A failed batch write does not identify the bad item, so the chunk is re-processed and re-written one item at a time. A reader skip just moves to the next line.</p></details>
+<details><summary>Exactly-once effects across a database and an external API?</summary><p>Not cheaply. Make both sides idempotent: upsert for the database, an idempotency key for the API. Or write an outbox row in the chunk transaction and deliver it separately.</p></details>
+<details><summary>A job completes but wrote zero rows. Why?</summary><p>Check the <code>BATCH_STEP_EXECUTION</code> counts. Likely causes: the reader query matches nothing, parameters bound empty, the processor filters everything, or the writer SQL matched no rows with assert updates off.</p></details>
+<details><summary>What changed in Spring Batch 6?</summary><p><code>JobOperator</code> replaces <code>JobLauncher</code>, <code>JobRepository</code> subsumes <code>JobExplorer</code>, new <code>ChunkOrientedStep</code> with Framework 7 retry, immutable domain model, package moves, schema sequence rename, a resourceless default in Boot 4, and Jackson 3.</p></details></section>
+
+<section id="m17"><h2>17. Production best practices</h2>
+<div class="row">
+<div class="card"><h5>Logging</h5><p>Put the execution id in the MDC. Log at job and step boundaries, log rejects with keys, never log per item at INFO or log sensitive fields.</p></div>
+<div class="card"><h5>Monitoring</h5><p>v6 needs an <code>ObservationRegistry</code> bean. Short-lived jobs die before Prometheus scrapes, so push or use the metadata tables.</p></div>
+<div class="card"><h5>Alerts</h5><p>Failed, running too long, stale <code>LAST_UPDATED</code>, skip counts, and a missing run.</p></div>
+<div class="card"><h5>Deployment</h5><p>One job per container, Kubernetes CronJob as scheduler, <code>spring.batch.job.enabled=false</code>, secrets never in parameters.</p></div></div>
+<div class="tw"><table><tr><th>Anti-pattern</th><th>Fix</th></tr>
+<tr><td>Record loop in a tasklet</td><td>Chunk step</td></tr><tr><td><code>chunk(1)</code></td><td>500 to 1000 for JDBC</td></tr><tr><td>Per-item lookup in processor</td><td>Preload map or join</td></tr><tr><td>Per-item <code>save</code> for millions</td><td>JDBC batch writer</td></tr><tr><td>Never purging metadata</td><td>Retention job</td></tr><tr><td>Non-idempotent writes</td><td>Upserts or idempotency keys</td></tr><tr><td>Only testing the happy path</td><td>Restart, skip, retry and volume tests</td></tr></table></div>
+<details><summary>Production checklist</summary><ul><li>Idempotent writes; restart tested</li><li>Stable identifying parameters and a validator</li><li>Skip limits, reject recording, retry only for transient errors</li><li>Chunk, page and pool sizes as measured config properties</li><li>MySQL: <code>rewriteBatchedStatements</code>, cursor streaming, indexes checked with EXPLAIN</li><li>Schema migrated; retention job in place</li><li>Metrics, logs with execution id, alerts including missing run</li><li>Graceful shutdown and a zombie-execution runbook</li><li>MySQL Testcontainers integration tests</li></ul></details></section>
+
+<section id="cap"><h2>Capstone: a transaction import application</h2><p class="sub">Boot 4, Batch 6, Java 21, MySQL 8. Written but not compiled, so expect small import fixes.</p>
+<p>A partner drops a daily CSV. The job imports and validates it, writes a per-account summary, then archives the file.</p>
+<pre><code>POST /batch/txn-import?inputFile=tx-2026-10-01.csv&amp;runDate=2026-10-01
+ -> Job txnImportJob
+    1 importStep   FlatFileItemReader -> TxProcessor -> JdbcBatchItemWriter
+                   skip -> RejectSkipListener -> tx_rejects
+    2 summaryStep  JdbcCursorItemReader (GROUP BY account) -> FlatFileItemWriter
+    3 archiveStep  tasklet moves the CSV to archive/</code></pre>
+<h3>Key configuration</h3>
+<pre><code>spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/batchdb?rewriteBatchedStatements=true&amp;useCursorFetch=true
+  batch:
+    job: { enabled: false }          # never auto-run in production
+batch.txn: { chunk-size: 500, skip-limit: 100 }</code></pre>
+<h3>The fault-tolerant import step</h3>
+<pre><code>return new ChunkOrientedStepBuilder&lt;TxCsv, Tx&gt;("importStep", jobRepository, props.chunkSize())
+    .reader(txReader).processor(txProcessor).writer(txWriter)
+    .transactionManager(tx)
+    .faultTolerant()
+    .skip(FlatFileParseException.class).skip(InvalidTxException.class)
+    .skipLimit(props.skipLimit())
+    .retry(TransientDataAccessException.class).retryLimit(3)
+    .skipListener(skipListener)
+    .build();</code></pre>
+<h3>The processor</h3>
+<pre><code>public Tx process(TxCsv in) {
+  if (in.amount() == null) throw new InvalidTxException("amount missing", in.txId()); // skip
+  if (!CURRENCIES.contains(in.currency())) throw new InvalidTxException("bad currency", in.txId());
+  if (in.amount().signum() == 0) return null;                                          // filter
+  BigDecimal fee = in.amount().abs().multiply(FEE_RATE).setScale(2, RoundingMode.HALF_UP);
+  return new Tx(in.txId(), in.accountId(), in.amount(), in.currency(), in.txDate(), fee);
+}</code></pre>
+<h3>Expected result for the 8-row sample file</h3>
+<div class="tw"><table><tr><th>Item</th><th>Expected</th></tr>
+<tr><td>Rows</td><td>T004 zero amount (filtered), T005 bad currency (process skip), T006 unparseable amount (read skip)</td></tr>
+<tr><td>importStep counts</td><td>read 7, filter 1, process skip 1, read skip 1, write 5</td></tr>
+<tr><td>Exit status</td><td><code>COMPLETED WITH SKIPS</code>, BatchStatus COMPLETED</td></tr>
+<tr><td>Reject rows</td><td>2 in <code>tx_rejects</code></td></tr>
+<tr><td>Summary</td><td>A100: 3 tx, 395.50, fee 5.94; A200: 1, 300.00, 4.50; A400: 1, 10.00, 0.15</td></tr></table></div>
+<h3>Restart demo</h3>
+<ol><li>Set <code>batch.demo.fail-on-tx-id=T007</code> and chunk size 3, then launch. The step fails with a non-skippable exception; T001 to T003 are committed.</li><li>Remove the setting and call <code>POST /batch/restart/{executionId}</code>.</li><li>A new execution under the same instance resumes after the last committed item. Steps 2 and 3 then run. Final data matches an uninterrupted run with no duplicates.</li></ol>
+<div class="note">Most likely to need a fix: <code>infrastructure</code> package names, <code>ChunkOrientedStepBuilder</code> generics, <code>SkipListener</code> generics, and the Boot property <code>spring.batch.jdbc.initialize-schema</code>.</div></section>
+</main></div>
+<script>
+(function(){
+var r=document.documentElement,n=document.getElementById('nav'),links=[].slice.call(n.querySelectorAll('a'));
+document.getElementById('tb').onclick=function(){var d=r.getAttribute('data-theme');var dark=d?d==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.setAttribute('data-theme',dark?'light':'dark');try{localStorage.setItem('th',dark?'light':'dark')}catch(e){}};
+try{var t=localStorage.getItem('th');if(t)r.setAttribute('data-theme',t)}catch(e){}
+document.getElementById('mb').onclick=function(){n.classList.toggle('open')};
+links.forEach(function(a){a.addEventListener('click',function(){n.classList.remove('open')})});
+var secs=[].slice.call(document.querySelectorAll('section'));
+function spy(){var y=scrollY+120,cur=secs[0];secs.forEach(function(s){if(s.offsetTop<=y)cur=s});links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+cur.id)})}
+addEventListener('scroll',spy,{passive:true});spy();
+})();
+</script>
+</body>
+</html>
